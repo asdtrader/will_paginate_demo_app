@@ -1,0 +1,17 @@
+<p>
+  <strong>Name:</strong>
+  <%=h @page.name %>
+</p>
+<p>
+  <strong>Status:</strong>
+  <%=h @page.status %>
+</p>
+
+<p>
+  <%= link_to 'Edit', edit_admin_page_path(:id => @page, :page => page_param, :from => h(params[:from])) %> |
+  <%- if params[:from]=="pending" -%>
+  <%= link_to 'Back', pending_admin_pages_path(:page => page_param) %>
+  <%- else -%>
+  <%= link_to 'Back', admin_pages_path(:page => page_param) %>
+  <%- end -%>
+</p>

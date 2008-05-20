@@ -1,0 +1,144 @@
+= WillPaginate Demo App
+
+This is an app that shows how to use will_paginate and edge rails.  
+
+== Learn about will_paginate
+  
+* http://github.com/mislav/will_paginate/wikis
+* http://mislav.caboo.se/rails/will_paginate-love/
+
+== Why did I make a demo app?
+
+WillPaginate rocks.  The code rocks.  The documentation rocks.  But there are a few things that bug me as a result of will_paginate not being in core.
+
+* Rails generators don't take pagination into account
+* Routing doesn't take pagination into account
+* When I click "new", "edit" or "show" and then click "back" I expect to return to the page that I started from
+* If you are updating a model called Page, params[:page] is not what you want
+
+WillPaginate, while it is one of the finest plugins ever created for rails, could be even hipper if it created easy ways to get around these issues.  
+
+This demo app should serve as a way to easily identify where things are non-dry and start drying them up.  Once they are a little more dry, the idea would be to:
+
+* Create a plugin to make it easier to include these improvements in other apps
+* Create a generator to make it easier to generate code in places where plugins can't help
+* See if any of the ideas generated are worthy of inclusion into will_paginate, and if so, add them in and suggest them to the authors
+
+== Common issues and my solutions to them
+
+=== 1: making sure links hook up correctly through all new/edit/destroy/back links
+
+Any link from the index page needs to append the page to it.  But as soon as we render the page, we need to make it html safe, so I've added a helper named page_param:
+
+  def page_param
+    params[:page].blank? ? nil : h(params[:page])
+  end
+
+=== 2: make sure that the form posts don't lose the page number
+
+Add a hidden field to your forms with the page param, or add the page param to your forms url (a little harder to do)
+
+=== 3. Give all results to the XML api
+
+I often find that my xml api's don't care about pages - pages are more for humans than machines.  So I often put find(:all) for the xml, and paginate for the html.
+
+  def index
+    respond_to do |format|
+      format.html do
+        @pages = Page.approved.paginate(:all, :page => params[:page], :per_page => 10)
+      end
+      format.xml do 
+        @pages = Page.approved
+        render :xml => @pages
+      end
+    end
+  end
+
+The reason I list this as an issue is because I would like to write a generator that does this by default
+
+== Layout of demo app
+
+This demonstrates a few common use-cases related to namespacing:
+
+* A standard model/controller/views
+* A namespaced model/controller/views
+* A non-namespaced model, with a non-namespaced _and_ namespaced controller/views
+
+You should be able to create or edit any record, or add a record, from a paginated index page and be returned to that paginated index page.
+
+== What would be really hip
+
+=== Routing
+
+It would be very hip if I hooked into rails routes directly (using techniques from http://weblog.jamisbuck.org/2006/10/26/monkey-patching-rails-extending-routes-2) so that we could have:
+
+  ActionController::Routing::Routes.draw do |map|
+    map.resources :tasks, :member => {:assign => :post}, :paginate => true
+    
+    map.namespace :admin do |admin|
+      admin.resources :tasks, :member => {:assign => :post}, :paginate => true
+    end
+  end
+
+  paginated_task_path(task)
+  paginated_tasks_path
+  paginated_edit_task_path(task)
+
+  # the custom route you defined
+  paginated_assign_task_path(task)
+
+  # the namespaced route
+  paginated_assign_admin_task_path(task)
+
+  # with explicit keys (that is - paginated works just like regular routes)
+  paginated_assign_admin_task_path(:id => task.id, :page => page_param, :mode => "preview")
+
+  # or without explicit keys (adds :page => h(params[:page]))
+  paginated_assign_admin_task_path(:id => task.id, :mode => "preview")
+
+=== Generator
+
+Once all of this has been worked out, I may start working on a generator to create scaffolds (probably also using rspec) that have pagination.  Any generator should be able to:
+
+* generate tests
+* generate specs
+* work with namespaces, scaffold etc...
+
+  script/generate paginated_scaffold task name:string
+  script/generate paginated_rspec_scaffold task name:string
+
+As a side note - the rails scaffold generator is buggy when dealing with namespaces
+
+=== Patched FormHelper
+
+Form helper already adds a div with the authenticity token and method - it'd be hip to add the page in there as well.
+
+== Installation
+
+I installed will_paginate for this demo app like this:
+
+  gem sources -a http://gems.github.com/
+  gem install mislav-will_paginate
+
+Install the demo app by cloning this repo - see above.
+
+== TODO
+
+* Write the routing dsl
+* Figure out how to have a global paginated_redirect that will redirect to either a model or a url, adding the page param if it is not already there
+  
+  # with params[:page] == 4
+  paginated_redirect(Task) # => /tasks?page=4
+  paginated_redirect(Admin::Secret) # => /admin/secrets?page=4
+  paginated_redirect(admin_page_path(page)) # => /admin/pages/1?page=4
+  paginated_redirect(paginated_admin_page_path(page)) # => /admin/pages/1?page=4
+  paginated_redirect(paginated_admin_page_path(:id => page, :page => 6)) # => /admin/pages/1?page=6
+  paginated_redirect(task) # => if task is a Task, then /tasks/1?page=4
+  paginated_redirect("/pages") # => /pages/1?page=4
+  paginated_redirect("/pages?name=john") # => /pages/1?name=john&page=4
+  paginated_redirect("/pages?name=john&page=3") # => /pages/1?name=john&page=3
+
+* Figure out how to add the hidden field page param to the forms automatically
+* Write the generator
+* Pluginize all of the helpers, routing dsl, controller methods
+* Write lots of specs - identify the parts that should be generated, and the parts that would be custom

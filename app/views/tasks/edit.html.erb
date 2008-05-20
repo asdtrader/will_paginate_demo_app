@@ -1,0 +1,10 @@
+<h1>Editing task</h1>
+
+<% form_for(@task) do |f| %>
+  <%= render :partial => "form", :locals => {:f => f} %>
+<% end %>
+
+<p>
+<%= link_to 'Show', task_path(:id => @task, :page => page_param) %> |
+<%= link_to 'Back', tasks_path(:page => page_param) %>
+</p>

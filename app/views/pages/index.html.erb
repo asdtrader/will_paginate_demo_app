@@ -1,0 +1,19 @@
+<h1>Listing pages</h1>
+
+<%- paginated_section :class => "flickr_pagination" do -%>
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Status</th>
+    <th></th>
+  </tr>
+
+<% for page in @pages %>
+  <tr>
+    <td><%=h page.name %></td>
+    <td><%=h page.status %></td>
+    <td><%= link_to 'Show', page_url(:id => page, :page => page_param) %></td>
+  </tr>
+<% end %>
+</table>
+<%- end -%>

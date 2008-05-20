@@ -1,0 +1,14 @@
+<h1>Editing page</h1>
+
+<% form_for(@page, :url => admin_page_url, :html => {:method => :put}) do |f| %>
+  <%= render :partial => "form", :locals => {:f => f} %>
+<% end %>
+
+<p>
+  <%= link_to 'Show', admin_page_path(:id => @page, :page => page_param(:original_page), :from => h(params[:from])) %> |
+  <%- if params[:from]=="pending" -%>
+  <%= link_to 'Back', pending_admin_pages_path(:page => page_param(:original_page)) %>
+  <%- else -%>
+  <%= link_to 'Back', admin_pages_path(:page => page_param(:original_page)) %>
+  <%- end -%>
+</p>

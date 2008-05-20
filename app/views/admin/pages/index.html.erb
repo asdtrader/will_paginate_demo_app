@@ -1,0 +1,32 @@
+<h1>Listing pages</h1>
+
+<!-- 
+  Note that we don't have to pass the instance variable in here 
+  because will_paginate looks for @pages - it ignores the
+  namespace
+-->
+<%- paginated_section :class => "apple_pagination" do -%>
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Status</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% for page in @pages %>
+  <tr>
+    <td><%=h page.name %></td>
+    <td><%=h page.status %></td>
+    <td><%= link_to 'Show', admin_page_path(:id => page, :page => page_param) %></td>
+    <td><%= link_to 'Edit', edit_admin_page_path(:id => page, :page => page_param) %></td>
+    <td><%= link_to 'Destroy', admin_page_path(:id => page, :page => page_param), :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+<%- end -%>
+
+<p>
+<%= link_to 'New page', new_admin_page_path(:page => page_param) %>
+</p>

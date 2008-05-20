@@ -1,0 +1,9 @@
+<p>
+  <strong>Name:</strong>
+  <%=h @task.name %>
+</p>
+
+<p>
+<%= link_to 'Edit', edit_task_path(:id => @task, :page => page_param) %> |
+<%= link_to 'Back', tasks_path(:page => page_param) %>
+</p>
