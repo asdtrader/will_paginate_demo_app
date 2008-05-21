@@ -24,6 +24,10 @@ This demo app should serve as a way to easily identify where things are non-dry 
 * Create a generator to make it easier to generate code in places where plugins can't help
 * See if any of the ideas generated are worthy of inclusion into will_paginate, and if so, add them in and suggest them to the authors
 
+== Secondary goals
+
+To demonstrate the use of all of the WillPaginate features, including styles, LinkRenderers etc...
+
 == Common issues and my solutions to them
 
 === 1: making sure links hook up correctly through all new/edit/destroy/back links
@@ -127,16 +131,16 @@ Install the demo app by cloning this repo - see above.
 * Write the routing dsl
 * Figure out how to have a global paginated_redirect that will redirect to either a model or a url, adding the page param if it is not already there
   
-  # with params[:page] == 4
-  paginated_redirect(Task) # => /tasks?page=4
-  paginated_redirect(Admin::Secret) # => /admin/secrets?page=4
-  paginated_redirect(admin_page_path(page)) # => /admin/pages/1?page=4
-  paginated_redirect(paginated_admin_page_path(page)) # => /admin/pages/1?page=4
-  paginated_redirect(paginated_admin_page_path(:id => page, :page => 6)) # => /admin/pages/1?page=6
-  paginated_redirect(task) # => if task is a Task, then /tasks/1?page=4
-  paginated_redirect("/pages") # => /pages/1?page=4
-  paginated_redirect("/pages?name=john") # => /pages/1?name=john&page=4
-  paginated_redirect("/pages?name=john&page=3") # => /pages/1?name=john&page=3
+    # with params[:page] == 4
+    paginated_redirect(Task) # => /tasks?page=4
+    paginated_redirect(Admin::Secret) # => /admin/secrets?page=4
+    paginated_redirect(admin_page_path(page)) # => /admin/pages/1?page=4
+    paginated_redirect(paginated_admin_page_path(page)) # => /admin/pages/1?page=4
+    paginated_redirect(paginated_admin_page_path(:id => page, :page => 6)) # => /admin/pages/1?page=6
+    paginated_redirect(task) # => if task is a Task, then /tasks/1?page=4
+    paginated_redirect("/pages") # => /pages/1?page=4
+    paginated_redirect("/pages?name=john") # => /pages/1?name=john&page=4
+    paginated_redirect("/pages?name=john&page=3") # => /pages/1?name=john&page=3
 
 * Figure out how to add the hidden field page param to the forms automatically
 * Write the generator

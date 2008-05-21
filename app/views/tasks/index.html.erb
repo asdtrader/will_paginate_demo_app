@@ -6,7 +6,7 @@
   does not match the controller name, we would need to explicitly
   add it.
 -->
-<%- paginated_section do -%>
+<%- paginated_section :renderer => 'TaskRenderer' do -%>
 <table>
   <tr>
     <th>Name</th>
